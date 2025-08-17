@@ -588,7 +588,13 @@ def muon_update_newton_schulz(
         # Given 4D+ batch, flatten to 3D batch
         X = X.flatten(end_dim=-3)
 
-    return newton_schulz_func(X, epsilon=epsilon).reshape(original_shape)
+    original_dtype = X.dtype
+    X = X.type(torch.bfloat16)
+
+    X = newton_schulz_func(X, epsilon=epsilon).reshape(original_shape)
+
+    X = X.type(original_dtype)
+    return X
 
 
 def adjust_lr_rms_norm(lr, param_shape):
